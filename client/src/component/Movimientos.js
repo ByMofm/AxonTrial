@@ -7,62 +7,29 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { React, useState, forwardRef, useContext } from "react";
-import { PropTypes } from "prop-types";
-import NumberFormat from "react-number-format";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import DatePicker from "@mui/lab/DatePicker";
+import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import frLocale from "date-fns/locale/fr";
-import ImportContext from "../ImportContext";
 
 const options = [
   {
-    value: "Ingreso",
-    label: "Ingreso",
+    value: "A",
+    label: "A",
   },
   {
-    value: "Egreso",
-    label: "Gasto",
+    value: "B",
+    label: "B",
+  },
+  {
+    value: "C",
+    label: "C",
   },
 ];
-
-const NumberFormatCustom = forwardRef(function NumberFormatCustom(props, ref) {
-  const { onChange, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={ref}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator
-      isNumericString
-      prefix="$"
-    />
-  );
-});
-
-NumberFormatCustom.propTypes = {
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-
 export default function Movimientos() {
-  const { importNumber } = useContext(ImportContext);
-
   const [type, setType] = useState({
-    tipo: "",
-    concepto: "",
-    importe: "",
-    fechas: null,
+    nombre: "",
+    direccion: "",
+    dni: "",
+    condicioniva: "",
   });
 
   const handleChange = (event) => {
@@ -80,7 +47,6 @@ export default function Movimientos() {
       headers: { "Content-Type": "application/json" },
     });
     await response.json();
-    importNumber();
     navigate("/");
   };
 
@@ -97,30 +63,78 @@ export default function Movimientos() {
         <Card
           sx={{ mt: 8 }}
           style={{
-            backgroundColor: "rgba(63, 22, 81, 1)",
+            backgroundColor: "rgba(255, 248, 240, 1)",
             padding: "1rem",
           }}
         >
-          <Button onClick={() => navigate("/")}>volver</Button>
-          <Typography variant="5" color="white" margin={"55px"}>
-            Añadir Movimiento
+          <Button onClick={() => navigate("/")}>Volver</Button>
+          <Typography variant="5" color="black" margin={"55px"}>
+            Añadir Cliente
           </Typography>
           <CardContent>
             <form onSubmit={handleSubmit}>
               <TextField
-                name="tipo"
-                select
                 variant="outlined"
-                label="Movimiento"
-                value={type.tipo}
+                label="Nombre"
+                multiline
                 onChange={handleChange}
                 sx={{
                   display: "block",
                   margin: ".5rem 0",
                 }}
                 fullWidth={true}
-                InputProps={{ style: { color: "white" } }}
-                InputLabelProps={{ style: { color: "white" } }}
+                InputProps={{ style: { color: "black" } }}
+                InputLabelProps={{ style: { color: "black" } }}
+                name="nombre"
+              ></TextField>
+              <TextField
+                label="Direccion"
+                value={type.direccion}
+                onChange={handleChange}
+                name="direccion"
+                InputProps={{
+                  style: { color: "black" },
+                }}
+                variant="outlined"
+                sx={{
+                  display: "block",
+                  margin: ".5rem 0",
+                }}
+                fullWidth={true}
+                InputLabelProps={{ style: { color: "black" } }}
+              />
+              <TextField
+                label="DNI"
+                value={type.dni}
+                onChange={handleChange}
+                name="dni"
+                InputProps={{
+                  style: { color: "black" },
+                }}
+                variant="outlined"
+                sx={{
+                  display: "block",
+                  margin: ".5rem 0",
+                }}
+                fullWidth={true}
+                InputLabelProps={{ style: { color: "black" } }}
+              />
+              <TextField
+                label="Condicion Iva"
+                value={type.condicioniva}
+                onChange={handleChange}
+                select
+                name="condicioniva"
+                InputProps={{
+                  style: { color: "black" },
+                }}
+                variant="outlined"
+                sx={{
+                  display: "block",
+                  margin: ".5rem 0",
+                }}
+                fullWidth={true}
+                InputLabelProps={{ style: { color: "black" } }}
               >
                 {options.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value}>
@@ -128,65 +142,7 @@ export default function Movimientos() {
                   </MenuItem>
                 ))}
               </TextField>
-              <TextField
-                variant="outlined"
-                label="Concepto"
-                multiline
-                onChange={handleChange}
-                rows={4}
-                sx={{
-                  display: "block",
-                  margin: ".5rem 0",
-                }}
-                fullWidth={true}
-                InputProps={{ style: { color: "white" } }}
-                InputLabelProps={{ style: { color: "white" } }}
-                name="concepto"
-              ></TextField>
 
-              <TextField
-                label="Importe"
-                value={type.importe}
-                onChange={handleChange}
-                name="importe"
-                id="formatted-numberformat-input"
-                InputProps={{
-                  inputComponent: NumberFormatCustom,
-                  style: { color: "white" },
-                }}
-                variant="outlined"
-                sx={{
-                  display: "block",
-                  margin: ".5rem 0",
-                }}
-                fullWidth={true}
-                InputLabelProps={{ style: { color: "white" } }}
-              />
-              <LocalizationProvider
-                dateAdapter={AdapterDateFns}
-                locale={frLocale}
-              >
-                <DatePicker
-                  mask="__/__/____"
-                  label="Fecha"
-                  value={type.fechas}
-                  onChange={(newDate) => {
-                    setType({ ...type, fechas: newDate });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputLabelProps={{ style: { color: "white" } }}
-                    />
-                  )}
-                  sx={{
-                    display: "block",
-                    margin: ".5rem 0",
-                  }}
-                  fullWidth={true}
-                  name="fechas"
-                />
-              </LocalizationProvider>
               <Button
                 variant="contained"
                 color="primary"

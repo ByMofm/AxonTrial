@@ -1,10 +1,18 @@
-CREATE DATABASE Alkemy
+CREATE DATABASE axon
 
-CREATE TABLE values(
+CREATE TABLE clientes(
 
     id SERIAL PRIMARY KEY,
-    tipo VARCHAR(20) NOT NULL,
-    concepto VARCHAR(255) ,
-    importe NUMERIC(9) NOT NULL,
-    fechas DATE
+    nombre VARCHAR(100),
+    direccion VARCHAR(100) ,
+    dni VARCHAR(9),
+    condicioniva CHAR(1)
+);,
+
+CREATE TABLE facturas(
+
+    id SERIAL PRIMARY KEY,
+    idCliente INT,
+    nroFactura INT ,
+    importe DOUBLE PRECISION
 );

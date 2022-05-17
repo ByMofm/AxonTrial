@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useTheme, styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -17,9 +17,6 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { Button, Container, TableHead } from "@mui/material";
-import moment from "moment";
-import Display from "./Display";
-import ImportContext from "../ImportContext";
 import { useNavigate } from "react-router-dom";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
@@ -29,8 +26,8 @@ import NumberFormat from "react-number-format";
 // Arreglos de las tablas
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: "rgba(156, 53, 135, 1)",
-    color: "rgba(230, 230, 250, 1)",
+    backgroundColor: "rgba(0, 128, 0, 1)",
+    color: "rgba(255, 255, 255, 1)",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 18,
@@ -39,10 +36,10 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(2n)": {
-    backgroundColor: "rgba(224, 194, 242, 1)",
+    backgroundColor: "rgba(255, 255, 255, 1)",
   },
   "&:nth-of-type(2n+1)": {
-    backgroundColor: "rgba(247, 231, 251, 1)",
+    backgroundColor: "rgba(229, 229, 229, 1)",
   },
   // hide last border
   "&:last-child td, &:last-child th": {
@@ -132,7 +129,6 @@ export default function Home() {
 
   const [values, setValues] = useState([]);
   const navigate = useNavigate();
-  const { importNumber } = useContext(ImportContext);
 
   const loadValues = async () => {
     const response = await fetch("http://localhost:4000/home");
@@ -145,7 +141,6 @@ export default function Home() {
         method: "DELETE",
       });
       setValues(values.filter((val) => val.id !== id));
-      importNumber();
     } catch (error) {
       console.log(error);
     }
@@ -171,13 +166,10 @@ export default function Home() {
   };
 
   return (
-    <Container style={{ backgroundColor: "rgba(63, 22, 81, 1)" }}>
-      <Box sx={{ height: "40vh" }}>
-        <Display />
-      </Box>
+    <Container style={{ backgroundColor: "rgba(206, 211, 220, 1)" }}>
       <ButtonMediaQuery
         direction="row"
-        sx={{ position: "relative", bottom: "20vh", left: "15vh" }}
+        sx={{ position: "relative", left: "55vh", top: "2vh" }}
       >
         <Button
           variant="contained"
@@ -186,22 +178,22 @@ export default function Home() {
           startIcon={<AddCircleOutlineRoundedIcon />}
           onClick={() => navigate("/home/new")}
         >
-          Añadir
+          Añadir Cliente
         </Button>
       </ButtonMediaQuery>
-      <Container style={{ height: "55vh" }}>
+      <Container style={{ height: "95vh", paddingTop: "5vh" }}>
         <TableContainer component={Paper}>
           <Table
             sx={{ minWidth: 700 }}
             aria-label="custom table"
-            style={{ backgroundColor: "rgba(156, 53, 135, 1)" }}
+            style={{ backgroundColor: "rgba(0, 128, 0, 1)" }}
           >
             <TableHead>
               <TableRow>
-                <StyledTableCell>Movimiento</StyledTableCell>
-                <StyledTableCell align="right">Concepto</StyledTableCell>
-                <StyledTableCell align="right">Importe</StyledTableCell>
-                <StyledTableCell align="right">Fecha</StyledTableCell>
+                <StyledTableCell>Nombre</StyledTableCell>
+                <StyledTableCell align="center">Direccion</StyledTableCell>
+                <StyledTableCell align="center">Dni</StyledTableCell>
+                <StyledTableCell align="center">Condicion IVA</StyledTableCell>
                 <StyledTableCell></StyledTableCell>
                 <StyledTableCell></StyledTableCell>
               </TableRow>
@@ -216,40 +208,26 @@ export default function Home() {
               ).map((row) => {
                 return (
                   <StyledTableRow key={row.id}>
-                    <StyledTableCell
-                      component="th"
-                      scope="row"
-                      style={{
-                        color:
-                          row.tipo === "Ingreso"
-                            ? "rgba(0, 171, 9, 1)"
-                            : "rgba(255, 0, 0, 1)",
-                      }}
-                    >
-                      {row.tipo}
+                    <StyledTableCell component="th" scope="row">
+                      {row.nombre}
                     </StyledTableCell>
-                    <StyledTableCell style={{ width: 160 }} align="right">
-                      {row.concepto}
+                    <StyledTableCell style={{ width: 160 }} align="center">
+                      {row.direccion}
                     </StyledTableCell>
                     <StyledTableCell
                       style={{
                         width: 160,
-                        color:
-                          row.tipo === "Ingreso"
-                            ? "rgba(0, 171, 9, 1)"
-                            : "rgba(255, 0, 0, 1)",
                       }}
-                      align="right"
+                      align="center"
                     >
                       <NumberFormat
                         displayType="text"
-                        value={row.importe}
-                        prefix={"$"}
-                        thousandSeparator
+                        value={row.dni}
+                        format="## ### ###"
                       ></NumberFormat>
                     </StyledTableCell>
-                    <StyledTableCell style={{ width: 160 }} align="right">
-                      {moment(row.fechas).format("DD/MM/YYYY")}
+                    <StyledTableCell style={{ width: 160 }} align="center">
+                      {row.condicioniva}
                     </StyledTableCell>
                     <StyledTableCell align="right">
                       <Button
@@ -261,7 +239,7 @@ export default function Home() {
                         Modificar
                       </Button>
                     </StyledTableCell>
-                    <StyledTableCell align="right">
+                    <StyledTableCell align="center">
                       <Button
                         variant="outlined"
                         color="inherit"
@@ -281,7 +259,7 @@ export default function Home() {
                 </StyledTableRow>
               )}
             </TableBody>
-            <TableFooter style={{ backgroundColor: "rgba(156, 53, 135, 1)" }}>
+            <TableFooter style={{ backgroundColor: "rgba(0, 128, 0, 1)" }}>
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[10, 25, { label: "All", value: -1 }]}
@@ -299,7 +277,7 @@ export default function Home() {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                   ActionsComponent={TablePaginationActions}
                   style={{
-                    color: "rgba(230, 230, 250, 1)",
+                    color: "rgba(255, 255, 255, 1)",
                     border: 0,
                     position: "relative",
                     left: "55vh",

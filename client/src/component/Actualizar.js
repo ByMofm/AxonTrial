@@ -5,52 +5,34 @@ import {
   Grid,
   TextField,
   Typography,
+  MenuItem,
 } from "@mui/material";
-import { useState, forwardRef, useEffect, useContext } from "react";
-import { PropTypes } from "prop-types";
+import { useState, useEffect } from "react";
 import React from "react";
-import NumberFormat from "react-number-format";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import DatePicker from "@mui/lab/DatePicker";
 import { useNavigate, useParams } from "react-router-dom";
-import ImportContext from "../ImportContext";
-
-const NumberFormatCustom = forwardRef(function NumberFormatCustom(props, ref) {
-  const { onChange, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={ref}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator
-      isNumericString
-      prefix="$"
-    />
-  );
-});
-
-NumberFormatCustom.propTypes = {
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
 
 export default function Actualizar() {
-  const [type, setType] = useState({
-    concepto: "",
-    importe: "",
-    fechas: null,
-  });
+  const options = [
+    {
+      value: "A",
+      label: "A",
+    },
+    {
+      value: "B",
+      label: "B",
+    },
+    {
+      value: "C",
+      label: "C",
+    },
+  ];
 
-  const { importNumber } = useContext(ImportContext);
+  const [type, setType] = useState({
+    nombre: "",
+    direccion: "",
+    dni: "",
+    condicioniva: "",
+  });
 
   const handleChange = (event) => {
     setType({ ...type, [event.target.name]: event.target.value });
@@ -67,8 +49,6 @@ export default function Actualizar() {
       headers: { "Content-Type": "application/json" },
     });
     await response.json();
-
-    importNumber();
     navigate("/");
   };
 
@@ -79,9 +59,10 @@ export default function Actualizar() {
     const res = await fetch(`http://localhost:4000/home/${id}`);
     const data = await res.json();
     setType({
-      concepto: data.concepto,
-      importe: data.importe,
-      fechas: data.fechas,
+      nombre: data.nombre,
+      direccion: data.direccion,
+      dni: data.dni,
+      condicioniva: data.condicioniva,
     });
   };
 
@@ -102,42 +83,39 @@ export default function Actualizar() {
         <Card
           sx={{ mt: 8 }}
           style={{
-            backgroundColor: "rgba(63, 22, 81, 1)",
+            backgroundColor: "rgba(255, 248, 240, 1)",
             padding: "1rem",
           }}
         >
           <Button onClick={() => navigate("/")}>volver</Button>
-          <Typography variant="5" margin={"55px"} color="white">
-            Actualizar Movimiento
+          <Typography variant="5" margin={"55px"} color="black">
+            Actualizar Cliente
           </Typography>
           <CardContent>
             <form onSubmit={handleSubmit}>
               <TextField
                 variant="outlined"
-                label="Concepto"
+                label="Nombre"
                 multiline
                 onChange={handleChange}
-                rows={4}
                 sx={{
                   display: "block",
                   margin: ".5rem 0",
                 }}
                 fullWidth={true}
-                InputProps={{ style: { color: "white" } }}
-                InputLabelProps={{ style: { color: "white" } }}
-                name="concepto"
-                value={type.concepto}
+                InputProps={{ style: { color: "black" } }}
+                InputLabelProps={{ style: { color: "black" } }}
+                name="nombre"
+                value={type.nombre}
               ></TextField>
 
               <TextField
-                label="Importe"
-                value={type.importe}
+                label="Direccion"
+                value={type.direccion}
                 onChange={handleChange}
-                name="importe"
-                id="formatted-numberformat-input"
+                name="direccion"
                 InputProps={{
-                  inputComponent: NumberFormatCustom,
-                  style: { color: "white" },
+                  style: { color: "black" },
                 }}
                 variant="outlined"
                 sx={{
@@ -145,31 +123,44 @@ export default function Actualizar() {
                   margin: ".5rem 0",
                 }}
                 fullWidth={true}
-                InputLabelProps={{ style: { color: "white" } }}
+                InputLabelProps={{ style: { color: "black" } }}
               />
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Fecha"
-                  value={type.fechas}
-                  onChange={(newDate) => {
-                    setType({ ...type, fechas: newDate });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      InputLabelProps={{ style: { color: "white" } }}
-                    />
-                  )}
-                  sx={{
-                    display: "block",
-                    margin: ".5rem 0",
-                  }}
-                  fullWidth={true}
-                  InputProps={{ style: { color: "white" } }}
-                  InputLabelProps={{ style: { color: "white" } }}
-                  name="fechas"
-                />
-              </LocalizationProvider>
+              <TextField
+                variant="outlined"
+                label="Dni"
+                multiline
+                onChange={handleChange}
+                sx={{
+                  display: "block",
+                  margin: ".5rem 0",
+                }}
+                fullWidth={true}
+                InputProps={{ style: { color: "black" } }}
+                InputLabelProps={{ style: { color: "black" } }}
+                name="dni"
+                value={type.dni}
+              ></TextField>
+              <TextField
+                variant="outlined"
+                label="Condicion Iva"
+                select
+                onChange={handleChange}
+                sx={{
+                  display: "block",
+                  margin: ".5rem 0",
+                }}
+                fullWidth={true}
+                InputProps={{ style: { color: "black" } }}
+                InputLabelProps={{ style: { color: "black" } }}
+                name="condicioniva"
+                value={type.condicioniva}
+              >
+                {options.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </TextField>
               <Button
                 variant="contained"
                 color="primary"
